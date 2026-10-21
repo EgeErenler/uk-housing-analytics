@@ -1,11 +1,12 @@
 name: Analyse
 
-# HM Land Registry publishes new data around the 20th working day of each month.
-# This workflow downloads the yearly files, runs every SQL analysis and publishes
-# the dashboard. Results are also saved to the `results` branch as CSV.
+# Runs every day. HM Land Registry adds new sales once a month (around the 20th
+# working day), so a daily run picks up each release on the day it appears.
+# The workflow downloads the yearly files, runs every SQL analysis and publishes
+# the dashboard. Results are saved to the `results` branch only when they change.
 on:
   schedule:
-    - cron: "17 6 3 * *"
+    - cron: "17 6 * * *"
   push:
     branches: [main]
     paths:
@@ -71,7 +72,11 @@ jobs:
           printf '# Results\n\nCSV outputs of every SQL analysis, refreshed by the Analyse workflow.\n' > README.md
           git add *.csv README.md
           git commit -q -m "Results as of $(date -u +%Y-%m-%d)"
-          git push -q --force origin results-new:results
+          if git diff --quiet origin/results results-new -- 2>/dev/null; then
+            echo "Results unchanged, nothing to push"
+          else
+            git push -q --force origin results-new:results
+          fi
 
       - uses: actions/upload-pages-artifact@v3
         with:

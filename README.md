@@ -44,8 +44,9 @@ flowchart LR
     E --> G["results branch"]
 ```
 
-A monthly GitHub Actions workflow downloads the files, runs every SQL file in order,
-exports the result tables as CSV and publishes the dashboard.
+A daily GitHub Actions workflow downloads the files, runs every SQL file in order,
+exports the result tables as CSV and publishes the dashboard. HM Land Registry releases
+new sales once a month, so each release reaches the dashboard on the day it is published.
 
 ## The SQL
 

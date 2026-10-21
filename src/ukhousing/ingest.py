@@ -33,8 +33,9 @@ def download_year(year: int, raw_dir: Path, force: bool = False) -> Path:
 
 
 def download_all(raw_dir: Path) -> list[Path]:
+    # The current year grows every month, and late registrations still change last year's file.
     current = date.today().year
-    return [download_year(y, raw_dir, force=(y == current)) for y in years()]
+    return [download_year(y, raw_dir, force=(y >= current - 1)) for y in years()]
 
 
 def load(db_path: Path, csv_paths: list[Path]) -> int:
