@@ -19,6 +19,8 @@ def main(argv: list[str] | None = None) -> int:
     sub.add_parser("analyse", help="run the SQL and export results to CSV")
     site = sub.add_parser("site", help="build the static dashboard from the CSV results")
     site.add_argument("--out", type=Path, default=Path("site"))
+    charts = sub.add_parser("charts", help="make PNG charts from the CSV results")
+    charts.add_argument("--out", type=Path, default=Path("docs/img"))
     sub.add_parser("sample", help="write synthetic files in the real format")
     sub.add_parser("all", help="download, load and analyse")
     args = parser.parse_args(argv)
@@ -40,6 +42,10 @@ def main(argv: list[str] | None = None) -> int:
         from ukhousing.site import build_site
 
         build_site(config.OUTPUT_DIR, args.out)
+    if args.command == "charts":
+        from ukhousing.charts import make_all
+
+        make_all(config.OUTPUT_DIR, args.out)
     if args.command == "sample":
         from ukhousing.sample import write_sample
 

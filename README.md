@@ -9,6 +9,21 @@ using HM Land Registry's Price Paid Data (about 1 million sales a year).
 **Interactive dashboard: [egeerenler.com/uk-housing-analytics](https://egeerenler.com/uk-housing-analytics/)**
 **Findings: [REPORT.md](REPORT.md)**
 
+## Key findings
+
+- **London has stalled.** From 2018 to 2025 the median price rose 27% outside London but only
+  13% in London, and barely moved after 2022.
+- **The expensive centre fell.** Four of London's five most expensive boroughs are cheaper
+  than in 2020. Outer boroughs such as Hillingdon and Barking and Dagenham rose about 18%.
+- **Flats explain most of it.** A borough's share of flat sales has a −0.88 correlation with
+  its five-year price change.
+- **Same home, real returns.** London flats gained a median 1.5% a year between sales, and
+  23% were sold at a loss. Outside London, homes gained 4.6% a year.
+
+![Median price trend](docs/img/price-trend.png)
+
+![Flat share vs price change](docs/img/flats-vs-growth.png)
+
 ## Questions
 
 1. How have prices and activity changed since 2018, in London and outside it?
