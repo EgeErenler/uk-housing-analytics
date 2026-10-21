@@ -101,13 +101,15 @@ def flats_vs_growth(results: Path, out: Path) -> Path:
     ax.scatter(
         df["flat_share"], df["change_5y"], s=df["transactions"] / 25, color=ACCENT, alpha=0.75
     )
+    offsets = {"Hillingdon": (5, -12), "Lambeth": (-8, 4)}
     for _, r in df.iterrows():
         if r["change_5y"] < -0.06 or r["change_5y"] > 0.16:
             ax.annotate(
                 r["borough"],
                 (r["flat_share"], r["change_5y"]),
-                xytext=(5, -12 if r["borough"] == "Hillingdon" else 3),
+                xytext=offsets.get(r["borough"], (5, 3)),
                 textcoords="offset points",
+                ha="right" if r["borough"] == "Lambeth" else "left",
                 fontsize=8.5,
                 color=MUTED,
             )
