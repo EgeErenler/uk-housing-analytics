@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ukhousing"
+version = "0.1.0"
+description = "SQL analysis of every residential property sale in England and Wales since 2018."
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{ name = "Ege Erenler" }]
+license = { text = "MIT" }
+dependencies = [
+    "duckdb>=1.0",
+    "requests>=2.31",
+    "jinja2>=3.1",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.5"]
+charts = ["matplotlib>=3.8", "pandas>=2.1"]
+
+[project.scripts]
+ukhousing = "ukhousing.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+ukhousing = ["templates/*.html"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

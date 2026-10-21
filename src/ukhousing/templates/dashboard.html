@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UK Housing Market Analytics | England and Wales, 2018 to today</title>
+<meta name="description" content="SQL analysis of every residential sale in England and Wales since 2018, by Ege Erenler. London boroughs, price trends, new-build premiums and repeat-sales returns.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#F7F8FA; --paper:#FFFFFF; --ink:#13212F; --muted:#5B6878; --line:#E3E7ED;
+  --london:#D9480F; --rest:#3B6E8F; --ew:#13212F; --accent:#0F766E; --soft:#EEF6F5;
+  --display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --body:"Public Sans","Helvetica Neue",Arial,sans-serif;
+  --mono:"JetBrains Mono",Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+a{color:var(--accent)}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+header.top{background:var(--paper);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 20px;flex-wrap:wrap}
+.brand{font-family:var(--display);font-weight:800;letter-spacing:-.01em}
+.brand span{color:var(--accent)}
+.meta{font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+.hero{padding:56px 0 28px}
+.hero h1{font-family:var(--display);font-weight:800;font-size:clamp(34px,5.2vw,60px);line-height:1.02;letter-spacing:-.03em;margin:0 0 18px;max-width:20ch}
+.hero p{font-size:19px;color:var(--muted);max-width:64ch;margin:0}
+.hero p strong{color:var(--ink)}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin:28px 0 48px}
+@media(max-width:860px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.kpi{background:var(--paper);padding:20px 22px;min-width:0}
+.kpi .l{font-size:14px;color:var(--muted)}
+.kpi .v{font-family:var(--display);font-weight:800;font-size:34px;letter-spacing:-.02em;font-variant-numeric:tabular-nums;margin:2px 0}
+.kpi .s{font-size:13.5px;color:var(--muted)}
+.section{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:36px;padding:40px 0;border-top:1px solid var(--line)}
+@media(max-width:900px){.section{grid-template-columns:1fr;gap:16px}}
+.section h2{font-family:var(--display);font-size:26px;line-height:1.15;letter-spacing:-.02em;margin:0 0 10px}
+.section .text p{color:var(--muted);margin:0 0 12px}
+.section .text p strong{color:var(--ink)}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px;min-width:0}
+.chart{width:100%;height:360px}
+.chart.tall{height:640px}
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.controls button,.controls select{font:500 14px var(--body);border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:999px;padding:7px 14px;cursor:pointer}
+.controls button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.controls button:focus-visible,.controls select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.table-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14.5px;font-variant-numeric:tabular-nums}
+th,td{text-align:right;padding:9px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{font-weight:600;color:var(--muted);font-size:13px}
+td.pos{color:var(--accent)} td.neg{color:var(--london)}
+.legend{display:flex;gap:16px;font-size:13.5px;color:var(--muted);margin-top:8px;flex-wrap:wrap}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend b{width:12px;height:4px;border-radius:2px;display:inline-block}
+footer{border-top:1px solid var(--line);padding:32px 0 48px;color:var(--muted);font-size:14px}
+footer .cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}
+@media(max-width:760px){footer .cols{grid-template-columns:1fr}}
+footer h3{font-family:var(--display);font-size:16px;color:var(--ink);margin:0 0 8px}
+footer ul{margin:0;padding-left:18px}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brand">UK Housing <span>Market Analytics</span></div>
+    <div class="meta" id="meta"></div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <h1>London homes cost {{ h.london_ratio }}× the rest of England and Wales.</h1>
+    <p>An analysis of <strong>every residential sale</strong> registered with HM Land Registry since 2018, written in SQL on DuckDB. In {{ h.latest_year }}, the median London home sold for <strong>{{ h.london_median }}</strong>, against <strong>{{ h.rest_median }}</strong> outside the capital.</p>
+  </section>
+
+  <div class="kpis">
+    <div class="kpi"><div class="l">Median price, England and Wales</div><div class="v">{{ h.ew_median }}</div><div class="s">{{ h.latest_year }}, standard market sales</div></div>
+    <div class="kpi"><div class="l">Median price, London</div><div class="v">{{ h.london_median }}</div><div class="s">{{ h.london_ratio }}× the rest of the country</div></div>
+    <div class="kpi"><div class="l">Sales in {{ h.latest_year }}</div><div class="v">{{ h.transactions }}</div><div class="s" id="peakNote"></div></div>
+    <div class="kpi"><div class="l">London's widest gap</div><div class="v">{{ h.borough_gap }}×</div><div class="s">{{ h.top_borough }} vs {{ h.bottom_borough }}</div></div>
+  </div>
+
+  <div class="section">
+    <div class="text">
+      <h2>Prices: a long climb, then a plateau</h2>
+      <p>Median sale price per year. London prices are far higher, but the gap with the rest of the country has been <strong>narrowing</strong>: regional prices grew faster after 2020.</p>
+      <p>The latest year may be incomplete and is shown as a dashed point.</p>
+    </div>
+    <div class="panel">
+      <div class="chart" id="priceChart"></div>
+      <div class="legend"><span><b style="background:var(--london)"></b>London</span><span><b style="background:var(--rest)"></b>Outside London</span><span><b style="background:var(--ew)"></b>England and Wales</span></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="text">
+      <h2>Activity follows policy</h2>
+      <p>Monthly sales across England and Wales. The <strong>stamp duty holiday</strong> pulled sales forward to June and September 2021, when the relief stepped down and then ended.</p>
+      <p>After the <strong>September 2022 mini-budget</strong> pushed mortgage rates up, activity fell and stayed lower.</p>
+    </div>
+    <div class="panel"><div class="chart" id="volumeChart"></div></div>
+  </div>
+
+  <div class="section">
+    <div class="text">
+      <h2>London's 33 boroughs</h2>
+      <p>Median price in {{ h.latest_year }} and the change over five years. <strong>{{ h.top_borough }}</strong> tops the table at {{ h.top_borough_median }}; <strong>{{ h.bottom_borough }}</strong> is the most affordable at {{ h.bottom_borough_median }}.</p>
+      <p>Sort the table to compare price levels with growth. The two rankings are very different.</p>
+    </div>
+    <div class="panel">
+      <div class="controls" role="group" aria-label="Sort boroughs">
+        <button type="button" data-sort="median_price" aria-pressed="true">By price</button>
+        <button type="button" data-sort="change_5y" aria-pressed="false">By 5-year change</button>
+        <button type="button" data-sort="transactions" aria-pressed="false">By sales</button>
+      </div>
+      <div class="table-wrap"><table id="boroughTable"></table></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="text">
+      <h2>Explore a borough</h2>
+      <p>Pick a borough to see its median price each year against London as a whole.</p>
+    </div>
+    <div class="panel">
+      <div class="controls"><label class="sr" for="boroughPick" style="position:absolute;left:-9999px">Borough</label><select id="boroughPick"></select></div>
+      <div class="chart" id="boroughChart"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="text">
+      <h2>What owners actually made</h2>
+      <p>Medians move when a different mix of homes sells. A <strong>repeat-sales</strong> view avoids that: it finds homes that sold twice and measures the yearly return between the two sales.</p>
+      <p>The share of homes sold for less than their previous price is a useful sign of where the market has cooled.</p>
+    </div>
+    <div class="panel"><div class="chart tall" id="repeatChart"></div></div>
+  </div>
+
+  <div class="section">
+    <div class="text">
+      <h2>The new-build premium</h2>
+      <p>How much more a new home costs than an existing home of the same type, in {{ h.latest_year }}. Comparing within each type avoids the effect of new builds being more often flats.</p>
+    </div>
+    <div class="panel"><div class="chart" id="premiumChart"></div></div>
+  </div>
+
+  <div class="section">
+    <div class="text">
+      <h2>Fewer homes under £250k</h2>
+      <p>The share of sales in each price band, by year. Even outside London, the share of homes selling for under £250,000 has been falling.</p>
+    </div>
+    <div class="panel">
+      <div class="controls" role="group" aria-label="Choose area">
+        <button type="button" data-area="London" aria-pressed="true">London</button>
+        <button type="button" data-area="Outside London" aria-pressed="false">Outside London</button>
+      </div>
+      <div class="chart" id="bandChart"></div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap cols">
+    <div>
+      <h3>Method</h3>
+      <ul id="quality"></ul>
+      <p>Only standard market sales (category A) of detached, semi-detached, terraced and flat homes are used. London means Greater London. Full SQL on <a href="https://github.com/EgeErenler/uk-housing-analytics">GitHub</a>.</p>
+    </div>
+    <div>
+      <h3>About</h3>
+      <p>Built by <a href="https://egeerenler.com">Ege Erenler</a>.</p>
+      <p>Contains HM Land Registry data © Crown copyright and database right. This data is licensed under the Open Government Licence v3.0.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+<script>
+const P = {{ payload_json }};
+const D = P.data, H = P.headline;
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const C = {ink:css('--ink'), muted:css('--muted'), line:css('--line'), london:css('--london'), rest:css('--rest'), ew:css('--ew'), accent:css('--accent')};
+const AREA_COLOUR = {'London':C.london, 'Outside London':C.rest, 'England and Wales':C.ew};
+const gbp = v => v == null ? '–' : v >= 1e6 ? '£' + (v/1e6).toFixed(2) + 'm' : '£' + Math.round(v/1000) + 'k';
+const pct = (v, d=0) => v == null ? '–' : (v*100).toFixed(d) + '%';
+const signPct = v => v == null ? '–' : (v > 0 ? '+' : '') + (v*100).toFixed(1) + '%';
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const cov = D.coverage[0];
+document.getElementById('meta').textContent = `Sales ${cov.first_sale} to ${cov.last_sale} · ${Number(cov.sales).toLocaleString('en-GB')} rows`;
+document.getElementById('peakNote').textContent = `${signPct(H.vs_peak)} vs the ${H.peak_year} peak`;
+
+const charts = [];
+const axis = {axisLine:{lineStyle:{color:C.line}}, axisTick:{show:false}, axisLabel:{color:C.muted}, splitLine:{lineStyle:{color:C.line}}};
+function chart(id, opt) {
+  const c = echarts.init(document.getElementById(id), null, {renderer:'svg'});
+  c.setOption(Object.assign({textStyle:{fontFamily:'Public Sans, sans-serif'}, animationDuration:500}, opt), true);
+  charts.push(c); return c;
+}
+window.addEventListener('resize', () => charts.forEach(c => c.resize()));
+
+// Prices by year
+(function () {
+  const years = [...new Set(D.yearly_summary.map(r => r.sale_year))];
+  const series = ['London', 'Outside London', 'England and Wales'].map(area => ({
+    name: area, type:'line', symbolSize:7, lineStyle:{width:area === 'England and Wales' ? 2 : 3, type:area === 'England and Wales' ? 'dashed' : 'solid'},
+    itemStyle:{color:AREA_COLOUR[area]},
+    data: years.map(y => {
+      const r = D.yearly_summary.find(x => x.area === area && x.sale_year === y);
+      return r ? {value:r.median_price, symbol:r.is_complete_year ? 'circle' : 'emptyCircle'} : null;
+    }),
+  }));
+  chart('priceChart', {
+    grid:{left:70, right:20, top:20, bottom:30},
+    tooltip:{trigger:'axis', valueFormatter:gbp},
+    xAxis:{type:'category', data:years, ...axis, splitLine:{show:false}},
+    yAxis:{type:'value', ...axis, axisLabel:{color:C.muted, formatter:gbp}},
+    series,
+  });
+})();
+
+// Monthly volume with policy events
+(function () {
+  const rows = D.monthly_activity.filter(r => r.area === 'England and Wales');
+  const months = rows.map(r => r.sale_month);
+  const mark = (m, label) => ({xAxis:m, label:{formatter:label, color:C.muted, fontSize:11}});
+  chart('volumeChart', {
+    grid:{left:60, right:20, top:40, bottom:30},
+    tooltip:{trigger:'axis', valueFormatter:v => Number(v).toLocaleString('en-GB') + ' sales'},
+    xAxis:{type:'category', data:months, ...axis, splitLine:{show:false}, axisLabel:{color:C.muted, formatter:v => v.endsWith('-01-01') ? v.slice(0,4) : ''}},
+    yAxis:{type:'value', ...axis},
+    series:[{type:'bar', data:rows.map(r => r.transactions), itemStyle:{color:C.rest, borderRadius:[2,2,0,0]},
+      markLine:{symbol:'none', lineStyle:{color:C.london, type:'dashed'}, data:[
+        mark('2021-06-01', 'Stamp duty relief steps down'), mark('2021-09-01', 'Holiday ends'), mark('2022-09-01', 'Mini-budget'),
+      ].filter(d => months.includes(d.xAxis))}}],
+  });
+})();
+
+// Borough table
+(function () {
+  const table = document.getElementById('boroughTable');
+  const render = key => {
+    const rows = [...D.london_boroughs].sort((a, b) => (b[key] ?? -Infinity) - (a[key] ?? -Infinity));
+    table.innerHTML = `<thead><tr><th>Borough</th><th>Median ${H.latest_year}</th><th>5-year change</th><th>Sales</th><th>Flats</th></tr></thead><tbody>` +
+      rows.map(r => `<tr><td>${esc(r.borough)}</td><td>${gbp(r.median_price)}</td>
+        <td class="${r.change_5y >= 0 ? 'pos' : 'neg'}">${signPct(r.change_5y)}</td>
+        <td>${Number(r.transactions).toLocaleString('en-GB')}</td><td>${pct(r.flat_share)}</td></tr>`).join('') + '</tbody>';
+  };
+  document.querySelectorAll('[data-sort]').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('[data-sort]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    render(b.dataset.sort);
+  }));
+  render('median_price');
+})();
+
+// Borough explorer
+(function () {
+  const pick = document.getElementById('boroughPick');
+  const names = [...new Set(D.borough_yearly.map(r => r.borough))].sort();
+  pick.innerHTML = names.map(n => `<option>${esc(n)}</option>`).join('');
+  pick.value = names.includes('Hackney') ? 'Hackney' : names[0];
+  const london = D.yearly_summary.filter(r => r.area === 'London');
+  const years = london.map(r => r.sale_year);
+  const c = chart('boroughChart', {});
+  const draw = () => {
+    const b = D.borough_yearly.filter(r => r.borough === pick.value);
+    c.setOption({
+      grid:{left:70, right:20, top:30, bottom:30}, tooltip:{trigger:'axis', valueFormatter:gbp},
+      legend:{top:0, textStyle:{color:C.muted}},
+      xAxis:{type:'category', data:years, ...axis, splitLine:{show:false}},
+      yAxis:{type:'value', ...axis, axisLabel:{color:C.muted, formatter:gbp}},
+      series:[
+        {name:pick.value, type:'line', symbolSize:7, lineStyle:{width:3}, itemStyle:{color:C.accent}, data:years.map(y => (b.find(r => r.sale_year === y) || {}).median_price ?? null)},
+        {name:'All of London', type:'line', symbolSize:5, lineStyle:{type:'dashed'}, itemStyle:{color:C.london}, data:london.map(r => r.median_price)},
+      ]}, true);
+  };
+  pick.addEventListener('change', draw); draw();
+})();
+
+// Repeat sales by borough
+(function () {
+  const rows = [...D.repeat_sales_boroughs].sort((a, b) => a.median_annual_return - b.median_annual_return);
+  chart('repeatChart', {
+    grid:{left:150, right:60, top:30, bottom:30},
+    legend:{top:0, textStyle:{color:C.muted}},
+    tooltip:{trigger:'axis', axisPointer:{type:'shadow'}, valueFormatter:v => pct(v, 1)},
+    xAxis:{type:'value', ...axis, axisLabel:{color:C.muted, formatter:v => pct(v)}},
+    yAxis:{type:'category', data:rows.map(r => r.borough), ...axis, splitLine:{show:false}},
+    series:[
+      {name:'Median yearly return', type:'bar', data:rows.map(r => r.median_annual_return), itemStyle:{color:C.accent, borderRadius:[0,3,3,0]}},
+      {name:'Sold at a loss', type:'bar', data:rows.map(r => r.share_sold_at_loss), itemStyle:{color:C.london, opacity:.55, borderRadius:[0,3,3,0]}},
+    ],
+  });
+})();
+
+// New-build premium (latest complete year)
+(function () {
+  const y = H.latest_year, types = ['Detached', 'Semi-detached', 'Terraced', 'Flat'];
+  const series = ['London', 'Outside London'].map(area => ({
+    name:area, type:'bar', itemStyle:{color:AREA_COLOUR[area], borderRadius:[3,3,0,0]},
+    data:types.map(t => (D.new_build_premium.find(r => r.area === area && r.sale_year === y && r.property_type === t) || {}).premium ?? null),
+    label:{show:true, position:'top', color:C.muted, formatter:p => p.value == null ? '' : signPct(p.value)},
+  }));
+  chart('premiumChart', {
+    grid:{left:60, right:20, top:40, bottom:30}, legend:{top:0, textStyle:{color:C.muted}},
+    tooltip:{trigger:'axis', valueFormatter:signPct},
+    xAxis:{type:'category', data:types, ...axis, splitLine:{show:false}},
+    yAxis:{type:'value', ...axis, axisLabel:{color:C.muted, formatter:v => pct(v)}},
+    series,
+  });
+})();
+
+// Price bands
+(function () {
+  const c = chart('bandChart', {});
+  const bands = [['share_under_250k','Under £250k','#9CC5C0'], ['share_250k_500k','£250k–500k','#4E9F96'], ['share_500k_1m','£500k–1m','#0F766E'], ['share_over_1m','£1m+','#13212F']];
+  const draw = area => {
+    const rows = D.price_bands.filter(r => r.area === area);
+    c.setOption({
+      grid:{left:50, right:20, top:40, bottom:30}, legend:{top:0, textStyle:{color:C.muted}},
+      tooltip:{trigger:'axis', valueFormatter:v => pct(v, 1)},
+      xAxis:{type:'category', data:rows.map(r => r.sale_year), ...axis, splitLine:{show:false}},
+      yAxis:{type:'value', max:1, ...axis, axisLabel:{color:C.muted, formatter:v => pct(v)}},
+      series:bands.map(([k, name, colour]) => ({name, type:'bar', stack:'b', data:rows.map(r => r[k]), itemStyle:{color:colour}})),
+    }, true);
+  };
+  document.querySelectorAll('[data-area]').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('[data-area]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    draw(b.dataset.area);
+  }));
+  draw('London');
+})();
+
+// Data quality notes
+document.getElementById('quality').innerHTML = D.data_quality
+  .map(r => `<li>${esc(r.check_name)}: ${Number(r.row_count).toLocaleString('en-GB')}</li>`).join('');
+</script>
+</body>
+</html>
