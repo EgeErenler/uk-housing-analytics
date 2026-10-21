@@ -12,6 +12,8 @@ log = logging.getLogger(__name__)
 
 def run_sql(con: duckdb.DuckDBPyConnection, sql_dir: Path) -> list[str]:
     files = sorted(sql_dir.glob("*.sql"))
+    if not files:
+        raise FileNotFoundError(f"No SQL files in {sql_dir.resolve()}. Run from the repo root.")
     for path in files:
         log.info("running %s", path.name)
         con.execute(path.read_text())

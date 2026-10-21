@@ -9,8 +9,8 @@ from pathlib import Path
 BASE_URL = "https://price-paid-data.publicdata.landregistry.gov.uk"
 FIRST_YEAR = 2018
 
-ROOT = Path(__file__).resolve().parents[2]
-SQL_DIR = Path(os.getenv("UKH_SQL_DIR", ROOT / "sql"))
+# Paths are relative to the folder you run the command from (the repository root).
+SQL_DIR = Path(os.getenv("UKH_SQL_DIR", "sql"))
 RAW_DIR = Path(os.getenv("UKH_RAW_DIR", "data/raw"))
 DB_PATH = Path(os.getenv("UKH_DB_PATH", "data/housing.duckdb"))
 OUTPUT_DIR = Path(os.getenv("UKH_OUTPUT_DIR", "outputs"))
