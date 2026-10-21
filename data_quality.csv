@@ -1,0 +1,8 @@
+check_name,row_count
+All rows in the source files,8460348
+Category B (additional price paid) rows,1378696
+Property type O (other) rows,494529
+Rows flagged as deleted,0
+Rows without a postcode,27607
+Rows used in the analysis,7081652
+Repeat-sale pairs,841641

@@ -1,0 +1,21 @@
+outcode,borough,transactions,median_price,rank_most_expensive,rank_least_expensive
+W8,Kensington and Chelsea,290,1627500.0,1,209
+SW1W,City of Westminster,107,1574000.0,2,208
+SW7,Kensington and Chelsea,217,1525000.0,3,207
+SW3,Kensington and Chelsea,306,1500000.0,4,206
+W11,Kensington and Chelsea,296,1196000.0,5,205
+SW13,Richmond upon Thames,232,1180000.0,6,204
+SW10,Kensington and Chelsea,205,1075000.0,7,203
+NW8,City of Westminster,239,1018000.0,8,202
+NW3,Camden,627,1000000.0,10,200
+NW11,Barnet,240,1000000.0,9,201
+CR0,Croydon,1499,382700.0,200,10
+RM8,Barking and Dagenham,295,382500.0,201,9
+RM9,Barking and Dagenham,252,382000.0,202,8
+RM10,Barking and Dagenham,272,375000.0,203,7
+DA17,Bexley,221,370000.0,206,4
+SM2,Sutton,385,370000.0,205,5
+IG11,Barking and Dagenham,371,370000.0,204,6
+DA8,Bexley,298,365000.0,207,3
+DA1,Bexley,180,362500.0,208,2
+SE28,Bexley,224,355000.0,209,1

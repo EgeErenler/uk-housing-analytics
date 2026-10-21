@@ -1,0 +1,28 @@
+area,sale_year,leasehold_share,leasehold_house_share
+England and Wales,2018,0.2301,0.064
+England and Wales,2019,0.2189,0.0609
+England and Wales,2020,0.2071,0.0586
+England and Wales,2021,0.2113,0.0579
+England and Wales,2022,0.2389,0.0596
+England and Wales,2023,0.234,0.0608
+England and Wales,2024,0.2206,0.0597
+England and Wales,2025,0.2095,0.0601
+England and Wales,2026,0.2078,0.0606
+London,2018,0.5649,0.0307
+London,2019,0.5432,0.0268
+London,2020,0.5354,0.0276
+London,2021,0.5223,0.028
+London,2022,0.5684,0.0312
+London,2023,0.5668,0.0321
+London,2024,0.5462,0.0318
+London,2025,0.5281,0.0311
+London,2026,0.5045,0.0262
+Outside London,2018,0.1929,0.0659
+Outside London,2019,0.183,0.0629
+Outside London,2020,0.1692,0.0606
+Outside London,2021,0.1743,0.0599
+Outside London,2022,0.1984,0.0614
+Outside London,2023,0.1938,0.0626
+Outside London,2024,0.1804,0.0616
+Outside London,2025,0.1716,0.062
+Outside London,2026,0.1749,0.0628

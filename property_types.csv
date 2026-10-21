@@ -1,0 +1,109 @@
+area,sale_year,property_type,transactions,median_price,share_of_sales
+England and Wales,2018,Detached,224838,334000.0,0.2568
+England and Wales,2018,Flat,158425,213995.0,0.1809
+England and Wales,2018,Semi-detached,251230,210000.0,0.2869
+England and Wales,2018,Terraced,241071,182000.0,0.2753
+England and Wales,2019,Detached,221142,339950.0,0.2623
+England and Wales,2019,Flat,144716,213000.0,0.1717
+England and Wales,2019,Semi-detached,247145,214000.0,0.2932
+England and Wales,2019,Terraced,230016,185000.0,0.2728
+England and Wales,2020,Detached,213439,360000.0,0.2833
+England and Wales,2020,Flat,121435,230000.0,0.1612
+England and Wales,2020,Semi-detached,219980,228000.0,0.292
+England and Wales,2020,Terraced,198534,197000.0,0.2635
+England and Wales,2021,Detached,302890,389950.0,0.2787
+England and Wales,2021,Flat,180841,237500.0,0.1664
+England and Wales,2021,Semi-detached,311108,248000.0,0.2862
+England and Wales,2021,Terraced,292095,220000.0,0.2687
+England and Wales,2022,Detached,230455,420000.0,0.2533
+England and Wales,2022,Flat,176781,241000.0,0.1943
+England and Wales,2022,Semi-detached,257874,265000.0,0.2834
+England and Wales,2022,Terraced,244831,230000.0,0.2691
+England and Wales,2023,Detached,178211,420000.0,0.2516
+England and Wales,2023,Flat,133228,240000.0,0.1881
+England and Wales,2023,Semi-detached,205953,265000.0,0.2908
+England and Wales,2023,Terraced,190923,227000.0,0.2695
+England and Wales,2024,Detached,199414,415000.0,0.261
+England and Wales,2024,Flat,133331,245000.0,0.1745
+England and Wales,2024,Semi-detached,226978,269950.0,0.2971
+England and Wales,2024,Terraced,204182,235000.0,0.2673
+England and Wales,2025,Detached,213129,420000.0,0.2633
+England and Wales,2025,Flat,131495,242000.0,0.1624
+England and Wales,2025,Semi-detached,244368,275000.0,0.3019
+England and Wales,2025,Terraced,220469,240000.0,0.2724
+England and Wales,2026,Detached,81282,420000.0,0.2455
+England and Wales,2026,Flat,53144,220000.0,0.1605
+England and Wales,2026,Semi-detached,100835,275000.0,0.3045
+England and Wales,2026,Terraced,95864,240000.0,0.2895
+London,2018,Detached,3995,773000.0,0.0457
+London,2018,Flat,48449,425000.0,0.5537
+London,2018,Semi-detached,12243,530000.0,0.1399
+London,2018,Terraced,22816,487500.0,0.2607
+London,2019,Detached,4027,765000.0,0.048
+London,2019,Flat,44727,428500.0,0.5336
+London,2019,Semi-detached,12539,525000.0,0.1496
+London,2019,Terraced,22535,490000.0,0.2688
+London,2020,Detached,4070,800000.0,0.0522
+London,2020,Flat,40994,446000.0,0.5256
+London,2020,Semi-detached,11882,550000.0,0.1523
+London,2020,Terraced,21055,525000.0,0.2699
+London,2021,Detached,5982,850000.0,0.0517
+London,2021,Flat,59280,440000.0,0.5119
+London,2021,Semi-detached,17793,580000.0,0.1536
+London,2021,Terraced,32751,550000.0,0.2828
+London,2022,Detached,4601,945000.0,0.0462
+London,2022,Flat,55527,450000.0,0.5578
+London,2022,Semi-detached,13776,632000.0,0.1384
+London,2022,Terraced,25649,600000.0,0.2576
+London,2023,Detached,3610,935000.0,0.0473
+London,2023,Flat,42445,450000.0,0.5558
+London,2023,Semi-detached,10704,625000.0,0.1402
+London,2023,Terraced,19609,585500.0,0.2568
+London,2024,Detached,3947,900000.0,0.047
+London,2024,Flat,44898,450000.0,0.5349
+London,2024,Semi-detached,12474,615000.0,0.1486
+London,2024,Terraced,22622,593650.0,0.2695
+London,2025,Detached,4153,910000.0,0.0483
+London,2025,Flat,44387,443000.0,0.5167
+London,2025,Semi-detached,13297,625000.0,0.1548
+London,2025,Terraced,24067,594200.0,0.2802
+London,2026,Detached,1576,858750.0,0.0477
+London,2026,Flat,16366,420000.0,0.4951
+London,2026,Semi-detached,5443,625000.0,0.1647
+London,2026,Terraced,9672,575000.0,0.2926
+Outside London,2018,Detached,220843,330000.0,0.2802
+Outside London,2018,Flat,109976,165000.0,0.1396
+Outside London,2018,Semi-detached,238987,200000.0,0.3033
+Outside London,2018,Terraced,218255,170000.0,0.277
+Outside London,2019,Detached,217115,335000.0,0.286
+Outside London,2019,Flat,99989,165000.0,0.1317
+Outside London,2019,Semi-detached,234606,205000.0,0.309
+Outside London,2019,Terraced,207481,172000.0,0.2733
+Outside London,2020,Detached,209369,355000.0,0.31
+Outside London,2020,Flat,80441,170000.0,0.1191
+Outside London,2020,Semi-detached,208098,220000.0,0.3081
+Outside London,2020,Terraced,177479,180000.0,0.2628
+Outside London,2021,Detached,296908,385000.0,0.3057
+Outside London,2021,Flat,121561,180000.0,0.1252
+Outside London,2021,Semi-detached,293315,239995.0,0.302
+Outside London,2021,Terraced,259344,200000.0,0.2671
+Outside London,2022,Detached,225854,415000.0,0.2787
+Outside London,2022,Flat,121254,185000.0,0.1496
+Outside London,2022,Semi-detached,244098,257000.0,0.3012
+Outside London,2022,Terraced,219182,212500.0,0.2705
+Outside London,2023,Detached,174601,415000.0,0.2763
+Outside London,2023,Flat,90783,181000.0,0.1437
+Outside London,2023,Semi-detached,195249,256995.0,0.309
+Outside London,2023,Terraced,171314,210000.0,0.2711
+Outside London,2024,Detached,195467,410000.0,0.2875
+Outside London,2024,Flat,88433,182500.0,0.1301
+Outside London,2024,Semi-detached,214504,260000.0,0.3155
+Outside London,2024,Terraced,181560,215000.0,0.267
+Outside London,2025,Detached,208976,417995.0,0.2888
+Outside London,2025,Flat,87108,180000.0,0.1204
+Outside London,2025,Semi-detached,231071,265050.0,0.3194
+Outside London,2025,Terraced,196402,222500.0,0.2714
+Outside London,2026,Detached,79706,415000.0,0.2674
+Outside London,2026,Flat,36778,175000.0,0.1234
+Outside London,2026,Semi-detached,95392,265500.0,0.32
+Outside London,2026,Terraced,86192,224000.0,0.2892
