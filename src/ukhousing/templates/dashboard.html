@@ -74,21 +74,22 @@ footer ul{margin:0;padding-left:18px}
 <main class="wrap">
   <section class="hero">
     <h1>London homes cost {{ h.london_ratio }}× the rest of England and Wales.</h1>
-    <p>An analysis of <strong>every residential sale</strong> registered with HM Land Registry since 2018, written in SQL on DuckDB. In {{ h.latest_year }}, the median London home sold for <strong>{{ h.london_median }}</strong>, against <strong>{{ h.rest_median }}</strong> outside the capital.</p>
+    <p>An analysis of <strong>every standard residential sale</strong> registered with HM Land Registry since 2018, written in SQL on DuckDB. In {{ h.latest_year }}, the median London home sold for <strong>{{ h.london_median }}</strong>, against <strong>{{ h.rest_median }}</strong> outside the capital.</p>
   </section>
 
   <div class="kpis">
     <div class="kpi"><div class="l">Median price, England and Wales</div><div class="v">{{ h.ew_median }}</div><div class="s">{{ h.latest_year }}, standard market sales</div></div>
     <div class="kpi"><div class="l">Median price, London</div><div class="v">{{ h.london_median }}</div><div class="s">{{ h.london_ratio }}× the rest of the country</div></div>
     <div class="kpi"><div class="l">Sales in {{ h.latest_year }}</div><div class="v">{{ h.transactions }}</div><div class="s" id="peakNote"></div></div>
-    <div class="kpi"><div class="l">London's widest gap</div><div class="v">{{ h.borough_gap }}×</div><div class="s">{{ h.top_borough }} vs {{ h.bottom_borough }}</div></div>
+    <div class="kpi"><div class="l">Dearest vs cheapest borough</div><div class="v">{{ h.borough_gap }}×</div><div class="s">{{ h.top_borough }} vs {{ h.bottom_borough }}</div></div>
   </div>
 
   <div class="section">
     <div class="text">
-      <h2>Prices: a long climb, then a plateau</h2>
-      <p>Median sale price per year. London prices are far higher, but the gap with the rest of the country has been <strong>narrowing</strong>: regional prices grew faster after 2020.</p>
-      <p>The latest year may be incomplete and is shown as a dashed point.</p>
+      <h2>London stalls, the rest keeps climbing</h2>
+      <p>Median sale price per year. London is still far more expensive, but its prices have been <strong>almost flat since 2022</strong>, while the rest of England and Wales kept rising. The gap is narrowing.</p>
+      <p id="ratioNote"></p>
+      <p>An open circle marks a year that is not complete yet.</p>
     </div>
     <div class="panel">
       <div class="chart" id="priceChart"></div>
@@ -100,7 +101,8 @@ footer ul{margin:0;padding-left:18px}
     <div class="text">
       <h2>Activity follows policy</h2>
       <p>Monthly sales across England and Wales. The <strong>stamp duty holiday</strong> pulled sales forward to June and September 2021, when the relief stepped down and then ended.</p>
-      <p>After the <strong>September 2022 mini-budget</strong> pushed mortgage rates up, activity fell and stayed lower.</p>
+      <p>After the <strong>September 2022 mini-budget</strong> pushed mortgage rates up, activity fell and stayed lower. The data records the date a sale completed, so the drop appears a few months later, from early 2023.</p>
+      <p>The last spike, in <strong>March 2025</strong>, came just before stamp duty thresholds fell back on 1 April 2025.</p>
     </div>
     <div class="panel"><div class="chart" id="volumeChart"></div></div>
   </div>
@@ -109,7 +111,8 @@ footer ul{margin:0;padding-left:18px}
     <div class="text">
       <h2>London's 33 boroughs</h2>
       <p>Median price in {{ h.latest_year }} and the change over five years. <strong>{{ h.top_borough }}</strong> tops the table at {{ h.top_borough_median }}; <strong>{{ h.bottom_borough }}</strong> is the most affordable at {{ h.bottom_borough_median }}.</p>
-      <p>Sort the table to compare price levels with growth. The two rankings are very different.</p>
+      <p id="boroughNote"></p>
+      <p>Sort the table to compare price levels with growth. The two rankings almost reverse.</p>
     </div>
     <div class="panel">
       <div class="controls" role="group" aria-label="Sort boroughs">
@@ -145,6 +148,7 @@ footer ul{margin:0;padding-left:18px}
     <div class="text">
       <h2>The new-build premium</h2>
       <p>How much more a new home costs than an existing home of the same type, in {{ h.latest_year }}. Comparing within each type avoids the effect of new builds being more often flats.</p>
+      <p>The premium is largest for <strong>flats</strong>. Part of it is quality: new flats are often larger and better equipped, and this data has no floor area to adjust for that.</p>
     </div>
     <div class="panel"><div class="chart" id="premiumChart"></div></div>
   </div>
@@ -227,17 +231,36 @@ window.addEventListener('resize', () => charts.forEach(c => c.resize()));
 (function () {
   const rows = D.monthly_activity.filter(r => r.area === 'England and Wales');
   const months = rows.map(r => r.sale_month);
-  const mark = (m, label) => ({xAxis:m, label:{formatter:label, color:C.muted, fontSize:11}});
+  const mark = (m, label, dist) => ({xAxis:m, label:{formatter:label, color:C.muted, fontSize:11, distance:dist}});
   chart('volumeChart', {
-    grid:{left:60, right:20, top:40, bottom:30},
+    grid:{left:60, right:20, top:56, bottom:30},
     tooltip:{trigger:'axis', valueFormatter:v => Number(v).toLocaleString('en-GB') + ' sales'},
     xAxis:{type:'category', data:months, ...axis, splitLine:{show:false}, axisLabel:{color:C.muted, formatter:v => v.endsWith('-01-01') ? v.slice(0,4) : ''}},
     yAxis:{type:'value', ...axis},
     series:[{type:'bar', data:rows.map(r => r.transactions), itemStyle:{color:C.rest, borderRadius:[2,2,0,0]},
       markLine:{symbol:'none', lineStyle:{color:C.london, type:'dashed'}, data:[
-        mark('2021-06-01', 'Stamp duty relief steps down'), mark('2021-09-01', 'Holiday ends'), mark('2022-09-01', 'Mini-budget'),
+        mark('2021-06-01', 'Relief cut', 4), mark('2021-09-01', 'Holiday ends', 20), mark('2022-09-01', 'Mini-budget', 4), mark('2025-03-01', 'Before stamp duty rise', 4),
       ].filter(d => months.includes(d.xAxis))}}],
   });
+})();
+
+// Notes computed from the data, so the text stays true when the data refreshes
+(function () {
+  const y = H.latest_year, ys = D.yearly_summary;
+  const ratio = (yr) => {
+    const l = ys.find(r => r.area === 'London' && r.sale_year === yr), o = ys.find(r => r.area === 'Outside London' && r.sale_year === yr);
+    return l && o ? (l.median_price / o.median_price).toFixed(2) : null;
+  };
+  const first = Math.min(...ys.map(r => r.sale_year));
+  document.getElementById('ratioNote').textContent = `In ${first}, a London home cost ${ratio(first)}× one elsewhere. In ${y}, it was ${ratio(y)}×.`;
+  const b = D.london_boroughs, top5 = [...b].sort((a, c) => c.median_price - a.median_price).slice(0, 5);
+  const fell = top5.filter(r => r.change_5y < 0).length;
+  const fastest = [...b].sort((a, c) => c.change_5y - a.change_5y).slice(0, 3);
+  const londonMedian = (ys.find(r => r.area === 'London' && r.sale_year === y) || {}).median_price;
+  const allCheaper = fastest.every(r => r.median_price < londonMedian);
+  const names = fastest.map(r => `<strong>${esc(r.borough)}</strong> (${signPct(r.change_5y)})`);
+  document.getElementById('boroughNote').innerHTML = `${fell} of the 5 most expensive boroughs are <strong>cheaper than five years ago</strong>. ` +
+    `The fastest growth was in ${names[0]}, ${names[1]} and ${names[2]}${allCheaper ? ', all priced below the London median' : ''}.`;
 })();
 
 // Borough table
